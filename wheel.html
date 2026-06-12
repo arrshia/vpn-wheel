@@ -6,124 +6,322 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>چرخ شانس</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.07);
+            --glass-bg-2: rgba(255, 255, 255, 0.12);
+            --glass-border: rgba(255, 255, 255, 0.22);
+            --glass-hi: rgba(255, 255, 255, 0.55);
+            --text: #f4f6ff;
+            --hint: rgba(244, 246, 255, 0.62);
+            --gold: #ffd56b;
+            --gold-deep: #f5a623;
+        }
+
+        html,
+        body {
+            height: 100%;
+            overflow: hidden;
         }
 
         body {
-            background: var(--tg-theme-bg-color, #1a1a2e);
-            color: var(--tg-theme-text-color, #eee);
-            font-family: Tahoma, 'Segoe UI', sans-serif;
+            font-family: 'Vazirmatn', Tahoma, 'Segoe UI', sans-serif;
+            color: var(--text);
+            background: #0c0a1f;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 100vh;
-            gap: 20px;
-            padding: 20px;
+            gap: 26px;
+            padding: 24px;
+            position: relative;
         }
 
-        h1 {
-            font-size: 1.4rem;
+        /* ── Ambient color orbs (what the glass refracts) ───────────────── */
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(60px);
+            opacity: 0.85;
+            z-index: 0;
+            pointer-events: none;
+            will-change: transform;
+        }
+
+        .orb.a {
+            width: 320px;
+            height: 320px;
+            background: #7b2ff7;
+            top: -80px;
+            right: -60px;
+            animation: drift1 14s ease-in-out infinite;
+        }
+
+        .orb.b {
+            width: 300px;
+            height: 300px;
+            background: #00c2a8;
+            bottom: -90px;
+            left: -70px;
+            animation: drift2 17s ease-in-out infinite;
+        }
+
+        .orb.c {
+            width: 240px;
+            height: 240px;
+            background: #ff4d8d;
+            top: 38%;
+            left: -40px;
+            animation: drift3 12s ease-in-out infinite;
+        }
+
+        .orb.d {
+            width: 220px;
+            height: 220px;
+            background: #f5a623;
+            bottom: 18%;
+            right: -30px;
+            animation: drift1 16s ease-in-out infinite reverse;
+        }
+
+        @keyframes drift1 {
+
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            50% {
+                transform: translate(-30px, 40px) scale(1.12);
+            }
+        }
+
+        @keyframes drift2 {
+
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            50% {
+                transform: translate(40px, -30px) scale(1.1);
+            }
+        }
+
+        @keyframes drift3 {
+
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            50% {
+                transform: translate(30px, 30px) scale(1.18);
+            }
+        }
+
+        /* ── Headline ───────────────────────────────────────────────────── */
+        .title {
+            position: relative;
+            z-index: 2;
+            font-weight: 800;
+            font-size: 1.5rem;
+            letter-spacing: .3px;
+            text-shadow: 0 2px 18px rgba(123, 47, 247, .55);
+        }
+
+        .title .spark {
+            filter: drop-shadow(0 0 10px var(--gold));
+        }
+
+        /* ── Glass card holding the wheel ───────────────────────────────── */
+        #wheel-card {
+            position: relative;
+            z-index: 2;
+            padding: 22px;
+            border-radius: 50%;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(22px) saturate(170%);
+            -webkit-backdrop-filter: blur(22px) saturate(170%);
+            box-shadow:
+                0 24px 60px rgba(0, 0, 0, .45),
+                inset 0 1px 1px var(--glass-hi),
+                inset 0 -8px 24px rgba(0, 0, 0, .25);
+        }
+
+        /* soft glow halo */
+        #wheel-card::before {
+            content: "";
+            position: absolute;
+            inset: -14px;
+            border-radius: 50%;
+            background: radial-gradient(closest-side, rgba(255, 213, 107, .35), transparent 72%);
+            filter: blur(8px);
+            z-index: -1;
         }
 
         #wheel-wrap {
             position: relative;
-            width: min(320px, 90vw);
-            height: min(320px, 90vw);
+            width: min(300px, 78vw);
+            height: min(300px, 78vw);
         }
 
         canvas {
             width: 100%;
             height: 100%;
+            display: block;
         }
 
+        /* glossy glass sheen laid over the wheel */
+        #sheen {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            pointer-events: none;
+            background:
+                radial-gradient(120% 80% at 30% 12%, rgba(255, 255, 255, .40), rgba(255, 255, 255, .06) 38%, transparent 60%);
+            mix-blend-mode: screen;
+        }
+
+        /* ── Pointer ────────────────────────────────────────────────────── */
         #pointer {
             position: absolute;
-            top: -14px;
+            top: -2px;
             left: 50%;
             transform: translateX(-50%);
-            width: 0;
-            height: 0;
-            border-left: 12px solid transparent;
-            border-right: 12px solid transparent;
-            border-top: 26px solid #f39c12;
-            filter: drop-shadow(0 2px 6px rgba(0, 0, 0, .5));
+            z-index: 4;
+            width: 38px;
+            height: 44px;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            filter: drop-shadow(0 4px 10px rgba(0, 0, 0, .5));
         }
 
+        #pointer::after {
+            content: "";
+            width: 0;
+            height: 0;
+            border-left: 13px solid transparent;
+            border-right: 13px solid transparent;
+            border-top: 30px solid var(--gold);
+        }
+
+        /* ── Spin button ────────────────────────────────────────────────── */
         #spin-btn {
-            background: #f39c12;
-            color: #fff;
-            border: none;
-            padding: 14px 48px;
-            border-radius: 32px;
-            font-size: 1.1rem;
+            position: relative;
+            z-index: 2;
             font-family: inherit;
+            font-weight: 800;
+            font-size: 1.15rem;
+            color: #20140a;
+            padding: 16px 56px;
+            border: 1px solid rgba(255, 255, 255, .5);
+            border-radius: 40px;
             cursor: pointer;
-            box-shadow: 0 4px 20px rgba(243, 156, 18, .45);
-            transition: transform .1s, opacity .2s;
+            background: linear-gradient(135deg, #ffe6a0, var(--gold) 45%, var(--gold-deep));
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            box-shadow:
+                0 10px 30px rgba(245, 166, 35, .5),
+                inset 0 1px 1px rgba(255, 255, 255, .8),
+                inset 0 -3px 8px rgba(160, 90, 0, .35);
+            transition: transform .12s ease, box-shadow .2s ease, opacity .25s ease;
         }
 
         #spin-btn:active {
-            transform: scale(.96);
+            transform: scale(.95);
         }
 
         #spin-btn:disabled {
-            opacity: .45;
+            opacity: .5;
             cursor: default;
+            transform: none;
         }
 
+        /* ── Message pill ───────────────────────────────────────────────── */
         #msg {
+            position: relative;
+            z-index: 2;
+            min-height: 20px;
             font-size: .95rem;
-            min-height: 22px;
-            color: var(--tg-theme-hint-color, #aaa);
+            color: var(--hint);
+            padding: 9px 20px;
+            border-radius: 22px;
+            background: var(--glass-bg-2);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, .3);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .orb {
+                animation: none;
+            }
         }
     </style>
 </head>
 
 <body>
 
-    <h1>🎡 چرخ شانس هفتگی</h1>
+    <div class="orb a"></div>
+    <div class="orb b"></div>
+    <div class="orb c"></div>
+    <div class="orb d"></div>
 
-    <div id="wheel-wrap">
-        <div id="pointer"></div>
-        <canvas id="c" width="600" height="600"></canvas>
+    <h1 class="title"><span class="spark">✨</span> چرخ شانس هفتگی</h1>
+
+    <div id="wheel-card">
+        <div id="wheel-wrap">
+            <div id="pointer"></div>
+            <canvas id="c" width="620" height="620"></canvas>
+            <div id="sheen"></div>
+        </div>
     </div>
 
     <button id="spin-btn">بچرخون!</button>
-    <p id="msg">هر هفته یک اسپین رایگان داری</p>
+    <p id="msg">پنجشنبه و جمعه، یک اسپین رایگان</p>
 
     <script>
         Telegram.WebApp.ready();
         Telegram.WebApp.expand();
 
-        // Segment order must match PRIZES list in services/wheel.py (idx 0-5)
+        // Segment order MUST match the PRIZES list in services/wheel.py (idx 0–5)
         const SEGS = [{
                 label: "شانس بعدی 🤞",
-                color: "#2c3e50"
-            },
-            {
-                label: "۵٬۰۰۰ تومان 💰",
-                color: "#27ae60"
+                base: "#3a3f63"
             },
             {
                 label: "۱۰٬۰۰۰ تومان 💰",
-                color: "#2980b9"
+                base: "#1f9d6b"
             },
             {
-                label: "تخفیف ۱۰٪ 🎫",
-                color: "#8e44ad"
+                label: "۱۰٪ تخفیف 🎫",
+                base: "#8e44ad"
             },
             {
-                label: "۲۵٬۰۰۰ تومان 💰",
-                color: "#e67e22"
+                label: "۲۰٪ تخفیف 🎫",
+                base: "#2d7dd2"
+            },
+            {
+                label: "۵۰٬۰۰۰ تومان 💰",
+                base: "#e67e22"
             },
             {
                 label: "کانفیگ رایگان 🎁",
-                color: "#c0392b"
+                base: "#d6336c"
             },
         ];
 
@@ -134,53 +332,92 @@
         let angle = 0;
         let spinning = false;
 
+        function shade(hex, light) {
+            const n = parseInt(hex.slice(1), 16);
+            let r = (n >> 16) & 255,
+                g = (n >> 8) & 255,
+                b = n & 255;
+            r = Math.round(r + (255 - r) * light);
+            g = Math.round(g + (255 - g) * light);
+            b = Math.round(b + (255 - b) * light);
+            return `rgb(${r},${g},${b})`;
+        }
+
         function draw(a) {
             const cx = canvas.width / 2,
                 cy = canvas.height / 2,
-                r = cx - 6;
+                r = cx - 8;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             for (let i = 0; i < N; i++) {
                 const s = a + i * ARC,
                     e = s + ARC;
+
+                // glossy radial fill per slice
+                const grad = ctx.createRadialGradient(cx, cy, r * 0.18, cx, cy, r);
+                grad.addColorStop(0, shade(SEGS[i].base, 0.28));
+                grad.addColorStop(0.7, SEGS[i].base);
+                grad.addColorStop(1, shade(SEGS[i].base, -0.12 < 0 ? 0 : 0));
+
                 ctx.beginPath();
                 ctx.moveTo(cx, cy);
                 ctx.arc(cx, cy, r, s, e);
                 ctx.closePath();
-                ctx.fillStyle = SEGS[i].color;
+                ctx.fillStyle = grad;
                 ctx.fill();
-                ctx.strokeStyle = "rgba(255,255,255,.25)";
+
+                // translucent glass separators
+                ctx.strokeStyle = "rgba(255,255,255,.28)";
                 ctx.lineWidth = 3;
                 ctx.stroke();
 
+                // label
                 ctx.save();
                 ctx.translate(cx, cy);
                 ctx.rotate(s + ARC / 2);
                 ctx.textAlign = "right";
-                ctx.fillStyle = "#fff";
-                ctx.font = "bold 22px Tahoma";
-                ctx.shadowColor = "rgba(0,0,0,.5)";
-                ctx.shadowBlur = 4;
-                ctx.fillText(SEGS[i].label, r - 16, 8);
+                ctx.fillStyle = "#ffffff";
+                ctx.font = "800 23px Vazirmatn, Tahoma, sans-serif";
+                ctx.shadowColor = "rgba(0,0,0,.55)";
+                ctx.shadowBlur = 6;
+                ctx.shadowOffsetY = 1;
+                ctx.fillText(SEGS[i].label, r - 20, 9);
                 ctx.restore();
             }
 
-            // Hub
+            // outer glass rim
             ctx.beginPath();
-            ctx.arc(cx, cy, 28, 0, 2 * Math.PI);
-            ctx.fillStyle = "#f39c12";
-            ctx.fill();
-            ctx.strokeStyle = "#fff";
-            ctx.lineWidth = 4;
+            ctx.arc(cx, cy, r, 0, 2 * Math.PI);
+            ctx.lineWidth = 8;
+            ctx.strokeStyle = "rgba(255,255,255,.30)";
             ctx.stroke();
+
+            // center hub — frosted glass disc
+            const hub = ctx.createRadialGradient(cx - 8, cy - 8, 4, cx, cy, 34);
+            hub.addColorStop(0, "rgba(255,255,255,.95)");
+            hub.addColorStop(1, "rgba(255,213,107,.85)");
+            ctx.beginPath();
+            ctx.arc(cx, cy, 32, 0, 2 * Math.PI);
+            ctx.fillStyle = hub;
+            ctx.shadowColor = "rgba(0,0,0,.4)";
+            ctx.shadowBlur = 10;
+            ctx.fill();
+            ctx.lineWidth = 4;
+            ctx.strokeStyle = "rgba(255,255,255,.9)";
+            ctx.stroke();
+            ctx.shadowBlur = 0;
         }
 
         draw(0);
+        if (document.fonts && document.fonts.ready) {
+            document.fonts.ready.then(() => draw(angle)); // redraw once Vazirmatn loads
+        }
 
         document.getElementById("spin-btn").addEventListener("click", () => {
             if (spinning) return;
             spinning = true;
-            document.getElementById("spin-btn").disabled = true;
+            const btn = document.getElementById("spin-btn");
+            btn.disabled = true;
             document.getElementById("msg").textContent = "در حال چرخش...";
 
             const rotations = (6 + Math.random() * 6) * 2 * Math.PI;
@@ -199,7 +436,7 @@
                 if (t < 1) {
                     requestAnimationFrame(frame);
                 } else {
-                    // Animation done → hand off to server
+                    // Animation done → server decides the real prize
                     Telegram.WebApp.sendData("spin");
                 }
             }
