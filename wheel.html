@@ -8,7 +8,7 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700;900&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -18,14 +18,16 @@
         }
 
         :root {
-            --glass-bg: rgba(255, 255, 255, 0.07);
-            --glass-bg-2: rgba(255, 255, 255, 0.12);
-            --glass-border: rgba(255, 255, 255, 0.22);
-            --glass-hi: rgba(255, 255, 255, 0.55);
-            --text: #f4f6ff;
-            --hint: rgba(244, 246, 255, 0.62);
-            --gold: #ffd56b;
-            --gold-deep: #f5a623;
+            --green: #15a05a;
+            --green-deep: #0d7a43;
+            --green-bright: #1fbd6d;
+            --ink: #0a1410;
+            --glass-bg: rgba(255, 255, 255, 0.08);
+            --glass-bg-2: rgba(255, 255, 255, 0.10);
+            --glass-border: rgba(255, 255, 255, 0.20);
+            --glass-hi: rgba(255, 255, 255, 0.50);
+            --text: #eef4f0;
+            --hint: rgba(238, 244, 240, 0.60);
         }
 
         html,
@@ -37,61 +39,43 @@
         body {
             font-family: 'Vazirmatn', Tahoma, 'Segoe UI', sans-serif;
             color: var(--text);
-            background: #0c0a1f;
+            background:
+                radial-gradient(120% 80% at 50% 0%, #0e1c15 0%, #070d0a 60%, #050807 100%);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 26px;
-            padding: 24px;
+            gap: 28px;
+            padding: 22px;
             position: relative;
         }
 
-        /* ── Ambient color orbs (what the glass refracts) ───────────────── */
-        .orb {
+        /* Restrained ambient green glow (what the glass refracts) */
+        .glow {
             position: fixed;
             border-radius: 50%;
-            filter: blur(60px);
-            opacity: 0.85;
+            filter: blur(70px);
             z-index: 0;
             pointer-events: none;
             will-change: transform;
         }
 
-        .orb.a {
+        .glow.a {
+            width: 360px;
+            height: 360px;
+            background: rgba(21, 160, 90, .40);
+            top: -90px;
+            right: -70px;
+            animation: drift1 20s ease-in-out infinite;
+        }
+
+        .glow.b {
             width: 320px;
             height: 320px;
-            background: #7b2ff7;
-            top: -80px;
-            right: -60px;
-            animation: drift1 14s ease-in-out infinite;
-        }
-
-        .orb.b {
-            width: 300px;
-            height: 300px;
-            background: #00c2a8;
-            bottom: -90px;
-            left: -70px;
-            animation: drift2 17s ease-in-out infinite;
-        }
-
-        .orb.c {
-            width: 240px;
-            height: 240px;
-            background: #ff4d8d;
-            top: 38%;
-            left: -40px;
-            animation: drift3 12s ease-in-out infinite;
-        }
-
-        .orb.d {
-            width: 220px;
-            height: 220px;
-            background: #f5a623;
-            bottom: 18%;
-            right: -30px;
-            animation: drift1 16s ease-in-out infinite reverse;
+            background: rgba(13, 122, 67, .32);
+            bottom: -100px;
+            left: -80px;
+            animation: drift2 24s ease-in-out infinite;
         }
 
         @keyframes drift1 {
@@ -102,7 +86,7 @@
             }
 
             50% {
-                transform: translate(-30px, 40px) scale(1.12);
+                transform: translate(-24px, 32px) scale(1.08);
             }
         }
 
@@ -114,67 +98,60 @@
             }
 
             50% {
-                transform: translate(40px, -30px) scale(1.1);
+                transform: translate(30px, -24px) scale(1.06);
             }
         }
 
-        @keyframes drift3 {
-
-            0%,
-            100% {
-                transform: translate(0, 0) scale(1);
-            }
-
-            50% {
-                transform: translate(30px, 30px) scale(1.18);
-            }
-        }
-
-        /* ── Headline ───────────────────────────────────────────────────── */
         .title {
             position: relative;
             z-index: 2;
-            font-weight: 800;
-            font-size: 1.5rem;
-            letter-spacing: .3px;
-            text-shadow: 0 2px 18px rgba(123, 47, 247, .55);
+            font-weight: 900;
+            font-size: 1.45rem;
+            letter-spacing: .2px;
+            color: #fff;
+            text-align: center;
         }
 
-        .title .spark {
-            filter: drop-shadow(0 0 10px var(--gold));
+        .title small {
+            display: block;
+            margin-top: 6px;
+            font-weight: 500;
+            font-size: .8rem;
+            letter-spacing: 2px;
+            color: var(--green-bright);
+            text-transform: uppercase;
         }
 
-        /* ── Glass card holding the wheel ───────────────────────────────── */
         #wheel-card {
             position: relative;
             z-index: 2;
-            padding: 22px;
+            padding: 18px;
             border-radius: 50%;
             background: var(--glass-bg);
             border: 1px solid var(--glass-border);
-            backdrop-filter: blur(22px) saturate(170%);
-            -webkit-backdrop-filter: blur(22px) saturate(170%);
+            backdrop-filter: blur(24px) saturate(150%);
+            -webkit-backdrop-filter: blur(24px) saturate(150%);
             box-shadow:
-                0 24px 60px rgba(0, 0, 0, .45),
+                0 28px 70px rgba(0, 0, 0, .55),
                 inset 0 1px 1px var(--glass-hi),
-                inset 0 -8px 24px rgba(0, 0, 0, .25);
+                inset 0 -10px 28px rgba(0, 0, 0, .30);
         }
 
-        /* soft glow halo */
         #wheel-card::before {
             content: "";
             position: absolute;
-            inset: -14px;
+            inset: -12px;
             border-radius: 50%;
-            background: radial-gradient(closest-side, rgba(255, 213, 107, .35), transparent 72%);
-            filter: blur(8px);
+            background: radial-gradient(closest-side, rgba(31, 189, 109, .30), transparent 70%);
+            filter: blur(10px);
             z-index: -1;
         }
 
+        /* +30% — was 300px, now 390px */
         #wheel-wrap {
             position: relative;
-            width: min(300px, 78vw);
-            height: min(300px, 78vw);
+            width: min(390px, 90vw);
+            height: min(390px, 90vw);
         }
 
         canvas {
@@ -183,65 +160,53 @@
             display: block;
         }
 
-        /* glossy glass sheen laid over the wheel */
         #sheen {
             position: absolute;
             inset: 0;
             border-radius: 50%;
             pointer-events: none;
             background:
-                radial-gradient(120% 80% at 30% 12%, rgba(255, 255, 255, .40), rgba(255, 255, 255, .06) 38%, transparent 60%);
+                radial-gradient(120% 80% at 30% 10%, rgba(255, 255, 255, .34), rgba(255, 255, 255, .04) 40%, transparent 62%);
             mix-blend-mode: screen;
         }
 
-        /* ── Pointer ────────────────────────────────────────────────────── */
         #pointer {
             position: absolute;
-            top: -2px;
+            top: -4px;
             left: 50%;
             transform: translateX(-50%);
             z-index: 4;
-            width: 38px;
-            height: 44px;
-            display: flex;
-            align-items: flex-start;
-            justify-content: center;
-            filter: drop-shadow(0 4px 10px rgba(0, 0, 0, .5));
-        }
-
-        #pointer::after {
-            content: "";
             width: 0;
             height: 0;
-            border-left: 13px solid transparent;
-            border-right: 13px solid transparent;
-            border-top: 30px solid var(--gold);
+            border-left: 14px solid transparent;
+            border-right: 14px solid transparent;
+            border-top: 32px solid #ffffff;
+            filter: drop-shadow(0 3px 8px rgba(0, 0, 0, .55));
         }
 
-        /* ── Spin button ────────────────────────────────────────────────── */
         #spin-btn {
             position: relative;
             z-index: 2;
             font-family: inherit;
-            font-weight: 800;
-            font-size: 1.15rem;
-            color: #20140a;
-            padding: 16px 56px;
-            border: 1px solid rgba(255, 255, 255, .5);
-            border-radius: 40px;
+            font-weight: 900;
+            font-size: 1.12rem;
+            color: #ffffff;
+            padding: 16px 60px;
+            border: 1px solid rgba(255, 255, 255, .35);
+            border-radius: 16px;
             cursor: pointer;
-            background: linear-gradient(135deg, #ffe6a0, var(--gold) 45%, var(--gold-deep));
+            background: linear-gradient(135deg, var(--green-bright), var(--green) 50%, var(--green-deep));
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
             box-shadow:
-                0 10px 30px rgba(245, 166, 35, .5),
-                inset 0 1px 1px rgba(255, 255, 255, .8),
-                inset 0 -3px 8px rgba(160, 90, 0, .35);
-            transition: transform .12s ease, box-shadow .2s ease, opacity .25s ease;
+                0 12px 32px rgba(13, 122, 67, .50),
+                inset 0 1px 1px rgba(255, 255, 255, .45),
+                inset 0 -3px 8px rgba(0, 50, 25, .35);
+            transition: transform .12s ease, opacity .25s ease;
         }
 
         #spin-btn:active {
-            transform: scale(.95);
+            transform: scale(.96);
         }
 
         #spin-btn:disabled {
@@ -250,24 +215,23 @@
             transform: none;
         }
 
-        /* ── Message pill ───────────────────────────────────────────────── */
         #msg {
             position: relative;
             z-index: 2;
             min-height: 20px;
-            font-size: .95rem;
+            font-size: .92rem;
             color: var(--hint);
-            padding: 9px 20px;
-            border-radius: 22px;
+            padding: 9px 22px;
+            border-radius: 12px;
             background: var(--glass-bg-2);
             border: 1px solid var(--glass-border);
             backdrop-filter: blur(14px);
             -webkit-backdrop-filter: blur(14px);
-            box-shadow: inset 0 1px 1px rgba(255, 255, 255, .3);
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, .25);
         }
 
         @media (prefers-reduced-motion: reduce) {
-            .orb {
+            .glow {
                 animation: none;
             }
         }
@@ -276,53 +240,60 @@
 
 <body>
 
-    <div class="orb a"></div>
-    <div class="orb b"></div>
-    <div class="orb c"></div>
-    <div class="orb d"></div>
+    <div class="glow a"></div>
+    <div class="glow b"></div>
 
-    <h1 class="title"><span class="spark">✨</span> چرخ شانس هفتگی</h1>
+    <h1 class="title">چرخ شانس
+        <small>پستو</small>
+    </h1>
 
     <div id="wheel-card">
         <div id="wheel-wrap">
             <div id="pointer"></div>
-            <canvas id="c" width="620" height="620"></canvas>
+            <canvas id="c" width="640" height="640"></canvas>
             <div id="sheen"></div>
         </div>
     </div>
 
-    <button id="spin-btn">بچرخون!</button>
-    <p id="msg">پنجشنبه یا جمعه، یک اسپین رایگان</p>
+    <button id="spin-btn">چرخاندن</button>
+    <p id="msg">پنجشنبه و جمعه، یک اسپین رایگان</p>
 
     <script>
         Telegram.WebApp.ready();
         Telegram.WebApp.expand();
 
-        // Segment order MUST match the PRIZES list in services/wheel.py (idx 0–5)
+        // Segment order MUST match the PRIZES list in services/wheel.py (idx 0-5).
+        // Palette rotates green -> white -> black for a formal, disciplined look.
         const SEGS = [{
                 label: "شانس بعدی 🤞",
-                base: "#3a3f63"
-            },
+                fill: "#12211a",
+                text: "#eef4f0"
+            }, // black
             {
                 label: "۱۰٬۰۰۰ تومان 💰",
-                base: "#1f9d6b"
-            },
+                fill: "#15a05a",
+                text: "#ffffff"
+            }, // green
             {
                 label: "۱۰٪ تخفیف 🎫",
-                base: "#8e44ad"
-            },
+                fill: "#eef3f0",
+                text: "#0d2b1d"
+            }, // white
             {
                 label: "۲۰٪ تخفیف 🎫",
-                base: "#2d7dd2"
-            },
+                fill: "#12211a",
+                text: "#eef4f0"
+            }, // black
             {
                 label: "۵۰٬۰۰۰ تومان 💰",
-                base: "#e67e22"
-            },
+                fill: "#15a05a",
+                text: "#ffffff"
+            }, // green
             {
                 label: "کانفیگ رایگان 🎁",
-                base: "#d6336c"
-            },
+                fill: "#eef3f0",
+                text: "#0d2b1d"
+            }, // white
         ];
 
         const canvas = document.getElementById("c");
@@ -337,27 +308,32 @@
             let r = (n >> 16) & 255,
                 g = (n >> 8) & 255,
                 b = n & 255;
-            r = Math.round(r + (255 - r) * light);
-            g = Math.round(g + (255 - g) * light);
-            b = Math.round(b + (255 - b) * light);
-            return `rgb(${r},${g},${b})`;
+            if (light >= 0) {
+                r += (255 - r) * light;
+                g += (255 - g) * light;
+                b += (255 - b) * light;
+            } else {
+                r *= (1 + light);
+                g *= (1 + light);
+                b *= (1 + light);
+            }
+            return `rgb(${r|0},${g|0},${b|0})`;
         }
 
         function draw(a) {
             const cx = canvas.width / 2,
                 cy = canvas.height / 2,
-                r = cx - 8;
+                r = cx - 10;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             for (let i = 0; i < N; i++) {
                 const s = a + i * ARC,
                     e = s + ARC;
 
-                // glossy radial fill per slice
-                const grad = ctx.createRadialGradient(cx, cy, r * 0.18, cx, cy, r);
-                grad.addColorStop(0, shade(SEGS[i].base, 0.28));
-                grad.addColorStop(0.7, SEGS[i].base);
-                grad.addColorStop(1, shade(SEGS[i].base, -0.12 < 0 ? 0 : 0));
+                const grad = ctx.createRadialGradient(cx, cy, r * 0.16, cx, cy, r);
+                grad.addColorStop(0, shade(SEGS[i].fill, 0.16));
+                grad.addColorStop(0.72, SEGS[i].fill);
+                grad.addColorStop(1, shade(SEGS[i].fill, -0.14));
 
                 ctx.beginPath();
                 ctx.moveTo(cx, cy);
@@ -366,62 +342,65 @@
                 ctx.fillStyle = grad;
                 ctx.fill();
 
-                // translucent glass separators
-                ctx.strokeStyle = "rgba(255,255,255,.28)";
-                ctx.lineWidth = 3;
+                ctx.strokeStyle = "rgba(255,255,255,.16)";
+                ctx.lineWidth = 2;
                 ctx.stroke();
 
-                // label
                 ctx.save();
                 ctx.translate(cx, cy);
                 ctx.rotate(s + ARC / 2);
                 ctx.textAlign = "right";
-                ctx.fillStyle = "#ffffff";
-                ctx.font = "800 23px Vazirmatn, Tahoma, sans-serif";
-                ctx.shadowColor = "rgba(0,0,0,.55)";
-                ctx.shadowBlur = 6;
-                ctx.shadowOffsetY = 1;
-                ctx.fillText(SEGS[i].label, r - 20, 9);
+                ctx.fillStyle = SEGS[i].text;
+                ctx.font = "700 25px Vazirmatn, Tahoma, sans-serif";
+                if (SEGS[i].text !== "#0d2b1d") {
+                    ctx.shadowColor = "rgba(0,0,0,.45)";
+                    ctx.shadowBlur = 5;
+                    ctx.shadowOffsetY = 1;
+                }
+                ctx.fillText(SEGS[i].label, r - 22, 9);
                 ctx.restore();
             }
 
-            // outer glass rim
             ctx.beginPath();
             ctx.arc(cx, cy, r, 0, 2 * Math.PI);
-            ctx.lineWidth = 8;
-            ctx.strokeStyle = "rgba(255,255,255,.30)";
+            ctx.lineWidth = 7;
+            ctx.strokeStyle = "rgba(255,255,255,.28)";
             ctx.stroke();
 
-            // center hub — frosted glass disc
-            const hub = ctx.createRadialGradient(cx - 8, cy - 8, 4, cx, cy, 34);
-            hub.addColorStop(0, "rgba(255,255,255,.95)");
-            hub.addColorStop(1, "rgba(255,213,107,.85)");
             ctx.beginPath();
-            ctx.arc(cx, cy, 32, 0, 2 * Math.PI);
+            ctx.arc(cx, cy, r - 6, 0, 2 * Math.PI);
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = "rgba(31,189,109,.55)";
+            ctx.stroke();
+
+            const hub = ctx.createRadialGradient(cx - 8, cy - 8, 4, cx, cy, 36);
+            hub.addColorStop(0, "rgba(255,255,255,.96)");
+            hub.addColorStop(1, "rgba(31,189,109,.85)");
+            ctx.beginPath();
+            ctx.arc(cx, cy, 34, 0, 2 * Math.PI);
             ctx.fillStyle = hub;
             ctx.shadowColor = "rgba(0,0,0,.4)";
-            ctx.shadowBlur = 10;
+            ctx.shadowBlur = 12;
             ctx.fill();
+            ctx.shadowBlur = 0;
             ctx.lineWidth = 4;
             ctx.strokeStyle = "rgba(255,255,255,.9)";
             ctx.stroke();
-            ctx.shadowBlur = 0;
         }
 
         draw(0);
         if (document.fonts && document.fonts.ready) {
-            document.fonts.ready.then(() => draw(angle)); // redraw once Vazirmatn loads
+            document.fonts.ready.then(() => draw(angle));
         }
 
         document.getElementById("spin-btn").addEventListener("click", () => {
             if (spinning) return;
             spinning = true;
-            const btn = document.getElementById("spin-btn");
-            btn.disabled = true;
+            document.getElementById("spin-btn").disabled = true;
             document.getElementById("msg").textContent = "در حال چرخش...";
 
             const rotations = (6 + Math.random() * 6) * 2 * Math.PI;
-            const duration = 4200;
+            const duration = 4500;
             const t0 = performance.now();
             const a0 = angle;
 
@@ -436,7 +415,6 @@
                 if (t < 1) {
                     requestAnimationFrame(frame);
                 } else {
-                    // Animation done → server decides the real prize
                     Telegram.WebApp.sendData("spin");
                 }
             }
