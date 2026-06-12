@@ -1,426 +1,353 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>چرخ شانس</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700;900&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>چرخ شانس</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-        :root {
-            --green: #15a05a;
-            --green-deep: #0d7a43;
-            --green-bright: #1fbd6d;
-            --ink: #0a1410;
-            --glass-bg: rgba(255, 255, 255, 0.08);
-            --glass-bg-2: rgba(255, 255, 255, 0.10);
-            --glass-border: rgba(255, 255, 255, 0.20);
-            --glass-hi: rgba(255, 255, 255, 0.50);
-            --text: #eef4f0;
-            --hint: rgba(238, 244, 240, 0.60);
-        }
+  :root {
+    --green:        #15a05a;
+    --green-deep:   #0d7a43;
+    --green-bright: #1fbd6d;
+    --glass-bg:     rgba(255, 255, 255, 0.08);
+    --glass-bg-2:   rgba(255, 255, 255, 0.10);
+    --glass-border: rgba(255, 255, 255, 0.20);
+    --glass-hi:     rgba(255, 255, 255, 0.50);
+    --text:         #eef4f0;
+    --hint:         rgba(238, 244, 240, 0.62);
+  }
 
-        html,
-        body {
-            height: 100%;
-            overflow: hidden;
-        }
+  html, body { height: 100%; overflow: hidden; }
 
-        body {
-            font-family: 'Vazirmatn', Tahoma, 'Segoe UI', sans-serif;
-            color: var(--text);
-            background:
-                radial-gradient(120% 80% at 50% 0%, #0e1c15 0%, #070d0a 60%, #050807 100%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 28px;
-            padding: 22px;
-            position: relative;
-        }
+  body {
+    font-family: 'Vazirmatn', Tahoma, 'Segoe UI', sans-serif;
+    color: var(--text);
+    background:
+      radial-gradient(120% 80% at 50% 0%, #0e1c15 0%, #070d0a 60%, #050807 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    padding: 22px;
+    position: relative;
+  }
 
-        /* Restrained ambient green glow (what the glass refracts) */
-        .glow {
-            position: fixed;
-            border-radius: 50%;
-            filter: blur(70px);
-            z-index: 0;
-            pointer-events: none;
-            will-change: transform;
-        }
+  .glow {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(70px);
+    z-index: 0;
+    pointer-events: none;
+    will-change: transform;
+  }
+  .glow.a { width: 360px; height: 360px; background: rgba(21,160,90,.40);  top: -90px;  right: -70px; animation: drift1 20s ease-in-out infinite; }
+  .glow.b { width: 320px; height: 320px; background: rgba(13,122,67,.32);  bottom: -100px; left: -80px; animation: drift2 24s ease-in-out infinite; }
 
-        .glow.a {
-            width: 360px;
-            height: 360px;
-            background: rgba(21, 160, 90, .40);
-            top: -90px;
-            right: -70px;
-            animation: drift1 20s ease-in-out infinite;
-        }
+  @keyframes drift1 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-24px, 32px) scale(1.08); } }
+  @keyframes drift2 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(30px, -24px) scale(1.06); } }
 
-        .glow.b {
-            width: 320px;
-            height: 320px;
-            background: rgba(13, 122, 67, .32);
-            bottom: -100px;
-            left: -80px;
-            animation: drift2 24s ease-in-out infinite;
-        }
+  .title {
+    position: relative;
+    z-index: 2;
+    font-weight: 900;
+    font-size: 1.45rem;
+    color: #fff;
+    text-align: center;
+  }
+  .title small {
+    display: block;
+    margin-top: 5px;
+    font-weight: 500;
+    font-size: .78rem;
+    letter-spacing: 2px;
+    color: var(--green-bright);
+    text-transform: uppercase;
+  }
 
-        @keyframes drift1 {
+  /* quick rule line above the wheel */
+  .rule {
+    position: relative;
+    z-index: 2;
+    font-size: .9rem;
+    font-weight: 500;
+    color: var(--hint);
+    padding: 9px 18px;
+    border-radius: 12px;
+    background: var(--glass-bg-2);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: inset 0 1px 1px rgba(255,255,255,.22);
+  }
+  .rule b { color: var(--green-bright); font-weight: 700; }
 
-            0%,
-            100% {
-                transform: translate(0, 0) scale(1);
-            }
+  #wheel-card {
+    position: relative;
+    z-index: 2;
+    padding: 18px;
+    border-radius: 50%;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(24px) saturate(150%);
+    -webkit-backdrop-filter: blur(24px) saturate(150%);
+    box-shadow:
+      0 28px 70px rgba(0, 0, 0, .55),
+      inset 0 1px 1px var(--glass-hi),
+      inset 0 -10px 28px rgba(0, 0, 0, .30);
+  }
+  #wheel-card::before {
+    content: "";
+    position: absolute;
+    inset: -12px;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, rgba(31,189,109,.30), transparent 70%);
+    filter: blur(10px);
+    z-index: -1;
+  }
 
-            50% {
-                transform: translate(-24px, 32px) scale(1.08);
-            }
-        }
+  #wheel-wrap {
+    position: relative;
+    width: min(390px, 90vw);
+    height: min(390px, 90vw);
+  }
+  canvas { width: 100%; height: 100%; display: block; }
 
-        @keyframes drift2 {
+  #sheen {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    pointer-events: none;
+    background:
+      radial-gradient(120% 80% at 30% 10%, rgba(255,255,255,.34), rgba(255,255,255,.04) 40%, transparent 62%);
+    mix-blend-mode: screen;
+  }
 
-            0%,
-            100% {
-                transform: translate(0, 0) scale(1);
-            }
+  #pointer {
+    position: absolute;
+    top: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 4;
+    width: 0; height: 0;
+    border-left: 14px solid transparent;
+    border-right: 14px solid transparent;
+    border-top: 32px solid #ffffff;
+    filter: drop-shadow(0 3px 8px rgba(0,0,0,.55));
+  }
 
-            50% {
-                transform: translate(30px, -24px) scale(1.06);
-            }
-        }
+  #spin-btn {
+    position: relative;
+    z-index: 2;
+    margin-top: 8px;
+    font-family: inherit;
+    font-weight: 900;
+    font-size: 1.12rem;
+    color: #ffffff;
+    padding: 16px 60px;
+    border: 1px solid rgba(255,255,255,.35);
+    border-radius: 16px;
+    cursor: pointer;
+    background: linear-gradient(135deg, var(--green-bright), var(--green) 50%, var(--green-deep));
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    animation: btnPulse 2.4s ease-in-out infinite;
+    transition: transform .12s ease, opacity .25s ease;
+  }
+  #spin-btn:active { transform: scale(.96); }
+  #spin-btn:disabled { opacity: .55; cursor: default; transform: none; animation: none; }
 
-        .title {
-            position: relative;
-            z-index: 2;
-            font-weight: 900;
-            font-size: 1.45rem;
-            letter-spacing: .2px;
-            color: #fff;
-            text-align: center;
-        }
+  @keyframes btnPulse {
+    0%, 100% {
+      box-shadow:
+        0 10px 26px rgba(13, 122, 67, .40),
+        inset 0 1px 1px rgba(255,255,255,.45),
+        inset 0 -3px 8px rgba(0, 50, 25, .35);
+    }
+    50% {
+      box-shadow:
+        0 14px 46px rgba(31, 189, 109, .80),
+        0 0 0 1px rgba(31, 189, 109, .25),
+        inset 0 1px 1px rgba(255,255,255,.55),
+        inset 0 -3px 8px rgba(0, 50, 25, .35);
+    }
+  }
 
-        .title small {
-            display: block;
-            margin-top: 6px;
-            font-weight: 500;
-            font-size: .8rem;
-            letter-spacing: 2px;
-            color: var(--green-bright);
-            text-transform: uppercase;
-        }
-
-        #wheel-card {
-            position: relative;
-            z-index: 2;
-            padding: 18px;
-            border-radius: 50%;
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            backdrop-filter: blur(24px) saturate(150%);
-            -webkit-backdrop-filter: blur(24px) saturate(150%);
-            box-shadow:
-                0 28px 70px rgba(0, 0, 0, .55),
-                inset 0 1px 1px var(--glass-hi),
-                inset 0 -10px 28px rgba(0, 0, 0, .30);
-        }
-
-        #wheel-card::before {
-            content: "";
-            position: absolute;
-            inset: -12px;
-            border-radius: 50%;
-            background: radial-gradient(closest-side, rgba(31, 189, 109, .30), transparent 70%);
-            filter: blur(10px);
-            z-index: -1;
-        }
-
-        /* +30% — was 300px, now 390px */
-        #wheel-wrap {
-            position: relative;
-            width: min(390px, 90vw);
-            height: min(390px, 90vw);
-        }
-
-        canvas {
-            width: 100%;
-            height: 100%;
-            display: block;
-        }
-
-        #sheen {
-            position: absolute;
-            inset: 0;
-            border-radius: 50%;
-            pointer-events: none;
-            background:
-                radial-gradient(120% 80% at 30% 10%, rgba(255, 255, 255, .34), rgba(255, 255, 255, .04) 40%, transparent 62%);
-            mix-blend-mode: screen;
-        }
-
-        #pointer {
-            position: absolute;
-            top: -4px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 4;
-            width: 0;
-            height: 0;
-            border-left: 14px solid transparent;
-            border-right: 14px solid transparent;
-            border-top: 32px solid #ffffff;
-            filter: drop-shadow(0 3px 8px rgba(0, 0, 0, .55));
-        }
-
-        #spin-btn {
-            position: relative;
-            z-index: 2;
-            font-family: inherit;
-            font-weight: 900;
-            font-size: 1.12rem;
-            color: #ffffff;
-            padding: 16px 60px;
-            border: 1px solid rgba(255, 255, 255, .35);
-            border-radius: 16px;
-            cursor: pointer;
-            background: linear-gradient(135deg, var(--green-bright), var(--green) 50%, var(--green-deep));
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            box-shadow:
-                0 12px 32px rgba(13, 122, 67, .50),
-                inset 0 1px 1px rgba(255, 255, 255, .45),
-                inset 0 -3px 8px rgba(0, 50, 25, .35);
-            transition: transform .12s ease, opacity .25s ease;
-        }
-
-        #spin-btn:active {
-            transform: scale(.96);
-        }
-
-        #spin-btn:disabled {
-            opacity: .5;
-            cursor: default;
-            transform: none;
-        }
-
-        #msg {
-            position: relative;
-            z-index: 2;
-            min-height: 20px;
-            font-size: .92rem;
-            color: var(--hint);
-            padding: 9px 22px;
-            border-radius: 12px;
-            background: var(--glass-bg-2);
-            border: 1px solid var(--glass-border);
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px);
-            box-shadow: inset 0 1px 1px rgba(255, 255, 255, .25);
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            .glow {
-                animation: none;
-            }
-        }
-    </style>
+  @media (prefers-reduced-motion: reduce) {
+    .glow, #spin-btn { animation: none; }
+  }
+</style>
 </head>
-
 <body>
 
-    <div class="glow a"></div>
-    <div class="glow b"></div>
+<div class="glow a"></div>
+<div class="glow b"></div>
 
-    <h1 class="title">چرخ شانس
-        <small>پستو</small>
-    </h1>
+<h1 class="title">چرخ شانس<small>پستو</small></h1>
 
-    <div id="wheel-card">
-        <div id="wheel-wrap">
-            <div id="pointer"></div>
-            <canvas id="c" width="640" height="640"></canvas>
-            <div id="sheen"></div>
-        </div>
-    </div>
+<div class="rule">🗓 فقط <b>پنجشنبه و جمعه</b> • هر کاربر <b>یک‌بار</b></div>
 
-    <button id="spin-btn">چرخاندن</button>
-    <p id="msg">پنجشنبه و جمعه، یک اسپین رایگان</p>
+<div id="wheel-card">
+  <div id="wheel-wrap">
+    <div id="pointer"></div>
+    <canvas id="c"></canvas>
+    <div id="sheen"></div>
+  </div>
+</div>
 
-    <script>
-        Telegram.WebApp.ready();
-        Telegram.WebApp.expand();
+<button id="spin-btn">چرخاندن</button>
 
-        // Segment order MUST match the PRIZES list in services/wheel.py (idx 0-5).
-        // Palette rotates green -> white -> black for a formal, disciplined look.
-        const SEGS = [{
-                label: "شانس بعدی 🤞",
-                fill: "#12211a",
-                text: "#eef4f0"
-            }, // black
-            {
-                label: "۱۰٬۰۰۰ تومان 💰",
-                fill: "#15a05a",
-                text: "#ffffff"
-            }, // green
-            {
-                label: "۱۰٪ تخفیف 🎫",
-                fill: "#eef3f0",
-                text: "#0d2b1d"
-            }, // white
-            {
-                label: "۲۰٪ تخفیف 🎫",
-                fill: "#12211a",
-                text: "#eef4f0"
-            }, // black
-            {
-                label: "۵۰٬۰۰۰ تومان 💰",
-                fill: "#15a05a",
-                text: "#ffffff"
-            }, // green
-            {
-                label: "کانفیگ رایگان 🎁",
-                fill: "#eef3f0",
-                text: "#0d2b1d"
-            }, // white
-        ];
+<script>
+Telegram.WebApp.ready();
+Telegram.WebApp.expand();
 
-        const canvas = document.getElementById("c");
-        const ctx = canvas.getContext("2d");
-        const N = SEGS.length;
-        const ARC = (2 * Math.PI) / N;
-        let angle = 0;
-        let spinning = false;
+// Segment order MUST match the PRIZES list in services/wheel.py (idx 0-5).
+// Palette rotates green -> white -> black for a formal, disciplined look.
+const SEGS = [
+  { label: "شانس بعدی 🤞",    fill: "#12211a", text: "#eef4f0" },  // black
+  { label: "۱۰٬۰۰۰ تومان 💰",  fill: "#15a05a", text: "#ffffff" },  // green
+  { label: "۱۰٪ تخفیف 🎫",    fill: "#eef3f0", text: "#0d2b1d" },  // white
+  { label: "۲۰٪ تخفیف 🎫",    fill: "#12211a", text: "#eef4f0" },  // black
+  { label: "۵۰٬۰۰۰ تومان 💰",  fill: "#15a05a", text: "#ffffff" },  // green
+  { label: "کانفیگ رایگان 🎁", fill: "#eef3f0", text: "#0d2b1d" },  // white
+];
 
-        function shade(hex, light) {
-            const n = parseInt(hex.slice(1), 16);
-            let r = (n >> 16) & 255,
-                g = (n >> 8) & 255,
-                b = n & 255;
-            if (light >= 0) {
-                r += (255 - r) * light;
-                g += (255 - g) * light;
-                b += (255 - b) * light;
-            } else {
-                r *= (1 + light);
-                g *= (1 + light);
-                b *= (1 + light);
-            }
-            return `rgb(${r|0},${g|0},${b|0})`;
-        }
+const canvas = document.getElementById("c");
+const ctx = canvas.getContext("2d");
+const N   = SEGS.length;
+const ARC = (2 * Math.PI) / N;
+let angle    = 0;
+let spinning = false;
 
-        function draw(a) {
-            const cx = canvas.width / 2,
-                cy = canvas.height / 2,
-                r = cx - 10;
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+// High-DPI: size the backing store to the real pixel density so text is crisp.
+function setupCanvas() {
+  const dpr = Math.min(window.devicePixelRatio || 1, 3);
+  const rect = canvas.getBoundingClientRect();
+  const size = Math.max(rect.width, 320);   // guard against pre-layout 0
+  canvas.width  = Math.round(size * dpr);
+  canvas.height = Math.round(size * dpr);
+  draw(angle);
+}
 
-            for (let i = 0; i < N; i++) {
-                const s = a + i * ARC,
-                    e = s + ARC;
+function shade(hex, light) {
+  const n = parseInt(hex.slice(1), 16);
+  let r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
+  if (light >= 0) {
+    r += (255 - r) * light; g += (255 - g) * light; b += (255 - b) * light;
+  } else {
+    r *= (1 + light); g *= (1 + light); b *= (1 + light);
+  }
+  return `rgb(${r|0},${g|0},${b|0})`;
+}
 
-                const grad = ctx.createRadialGradient(cx, cy, r * 0.16, cx, cy, r);
-                grad.addColorStop(0, shade(SEGS[i].fill, 0.16));
-                grad.addColorStop(0.72, SEGS[i].fill);
-                grad.addColorStop(1, shade(SEGS[i].fill, -0.14));
+function draw(a) {
+  const W = canvas.width, cx = W / 2, cy = W / 2;
+  const r = cx - W * 0.016;
+  ctx.clearRect(0, 0, W, W);
 
-                ctx.beginPath();
-                ctx.moveTo(cx, cy);
-                ctx.arc(cx, cy, r, s, e);
-                ctx.closePath();
-                ctx.fillStyle = grad;
-                ctx.fill();
+  for (let i = 0; i < N; i++) {
+    const s = a + i * ARC, e = s + ARC;
 
-                ctx.strokeStyle = "rgba(255,255,255,.16)";
-                ctx.lineWidth = 2;
-                ctx.stroke();
+    const grad = ctx.createRadialGradient(cx, cy, r * 0.16, cx, cy, r);
+    grad.addColorStop(0,   shade(SEGS[i].fill, 0.16));
+    grad.addColorStop(0.72, SEGS[i].fill);
+    grad.addColorStop(1,   shade(SEGS[i].fill, -0.14));
 
-                ctx.save();
-                ctx.translate(cx, cy);
-                ctx.rotate(s + ARC / 2);
-                ctx.textAlign = "right";
-                ctx.fillStyle = SEGS[i].text;
-                ctx.font = "700 25px Vazirmatn, Tahoma, sans-serif";
-                if (SEGS[i].text !== "#0d2b1d") {
-                    ctx.shadowColor = "rgba(0,0,0,.45)";
-                    ctx.shadowBlur = 5;
-                    ctx.shadowOffsetY = 1;
-                }
-                ctx.fillText(SEGS[i].label, r - 22, 9);
-                ctx.restore();
-            }
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, r, s, e);
+    ctx.closePath();
+    ctx.fillStyle = grad;
+    ctx.fill();
 
-            ctx.beginPath();
-            ctx.arc(cx, cy, r, 0, 2 * Math.PI);
-            ctx.lineWidth = 7;
-            ctx.strokeStyle = "rgba(255,255,255,.28)";
-            ctx.stroke();
+    ctx.strokeStyle = "rgba(255,255,255,.16)";
+    ctx.lineWidth = r * 0.006;
+    ctx.stroke();
 
-            ctx.beginPath();
-            ctx.arc(cx, cy, r - 6, 0, 2 * Math.PI);
-            ctx.lineWidth = 2;
-            ctx.strokeStyle = "rgba(31,189,109,.55)";
-            ctx.stroke();
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(s + ARC / 2);
+    ctx.textAlign = "right";
+    ctx.fillStyle = SEGS[i].text;
+    ctx.font = "700 " + Math.round(r * 0.086) + "px Vazirmatn, Tahoma, sans-serif";
+    if (SEGS[i].text !== "#0d2b1d") {
+      ctx.shadowColor = "rgba(0,0,0,.45)";
+      ctx.shadowBlur = r * 0.012;
+      ctx.shadowOffsetY = 1;
+    }
+    ctx.fillText(SEGS[i].label, r - r * 0.07, r * 0.022);
+    ctx.restore();
+  }
 
-            const hub = ctx.createRadialGradient(cx - 8, cy - 8, 4, cx, cy, 36);
-            hub.addColorStop(0, "rgba(255,255,255,.96)");
-            hub.addColorStop(1, "rgba(31,189,109,.85)");
-            ctx.beginPath();
-            ctx.arc(cx, cy, 34, 0, 2 * Math.PI);
-            ctx.fillStyle = hub;
-            ctx.shadowColor = "rgba(0,0,0,.4)";
-            ctx.shadowBlur = 12;
-            ctx.fill();
-            ctx.shadowBlur = 0;
-            ctx.lineWidth = 4;
-            ctx.strokeStyle = "rgba(255,255,255,.9)";
-            ctx.stroke();
-        }
+  // outer frosted rim
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, 0, 2 * Math.PI);
+  ctx.lineWidth = r * 0.022;
+  ctx.strokeStyle = "rgba(255,255,255,.28)";
+  ctx.stroke();
 
-        draw(0);
-        if (document.fonts && document.fonts.ready) {
-            document.fonts.ready.then(() => draw(angle));
-        }
+  // thin emerald accent ring
+  ctx.beginPath();
+  ctx.arc(cx, cy, r - r * 0.018, 0, 2 * Math.PI);
+  ctx.lineWidth = r * 0.006;
+  ctx.strokeStyle = "rgba(31,189,109,.55)";
+  ctx.stroke();
 
-        document.getElementById("spin-btn").addEventListener("click", () => {
-            if (spinning) return;
-            spinning = true;
-            document.getElementById("spin-btn").disabled = true;
-            document.getElementById("msg").textContent = "در حال چرخش...";
+  // center hub — frosted glass disc
+  const hubR = r * 0.108;
+  const hub = ctx.createRadialGradient(cx - hubR*0.3, cy - hubR*0.3, hubR*0.15, cx, cy, hubR);
+  hub.addColorStop(0, "rgba(255,255,255,.96)");
+  hub.addColorStop(1, "rgba(31,189,109,.85)");
+  ctx.beginPath();
+  ctx.arc(cx, cy, hubR, 0, 2 * Math.PI);
+  ctx.fillStyle = hub;
+  ctx.shadowColor = "rgba(0,0,0,.4)";
+  ctx.shadowBlur = r * 0.02;
+  ctx.fill();
+  ctx.shadowBlur = 0;
+  ctx.lineWidth = r * 0.012;
+  ctx.strokeStyle = "rgba(255,255,255,.9)";
+  ctx.stroke();
+}
 
-            const rotations = (6 + Math.random() * 6) * 2 * Math.PI;
-            const duration = 4500;
-            const t0 = performance.now();
-            const a0 = angle;
+setupCanvas();
+window.addEventListener("resize", setupCanvas);
+if (document.fonts && document.fonts.ready) {
+  document.fonts.ready.then(() => draw(angle));
+}
 
-            function easeOut(t) {
-                return 1 - Math.pow(1 - t, 3);
-            }
+const btn = document.getElementById("spin-btn");
+btn.addEventListener("click", () => {
+  if (spinning) return;
+  spinning = true;
+  btn.disabled = true;
+  btn.textContent = "در حال چرخش...";
 
-            function frame(now) {
-                const t = Math.min((now - t0) / duration, 1);
-                angle = a0 + rotations * easeOut(t);
-                draw(angle);
-                if (t < 1) {
-                    requestAnimationFrame(frame);
-                } else {
-                    Telegram.WebApp.sendData("spin");
-                }
-            }
-            requestAnimationFrame(frame);
-        });
-    </script>
+  const rotations = (6 + Math.random() * 6) * 2 * Math.PI;
+  const duration  = 4500;
+  const t0 = performance.now();
+  const a0 = angle;
+
+  function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
+
+  function frame(now) {
+    const t = Math.min((now - t0) / duration, 1);
+    angle = a0 + rotations * easeOut(t);
+    draw(angle);
+    if (t < 1) {
+      requestAnimationFrame(frame);
+    } else {
+      Telegram.WebApp.sendData("spin");
+    }
+  }
+  requestAnimationFrame(frame);
+});
+</script>
 </body>
-
 </html>
